@@ -147,7 +147,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160152860}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c95080834e855648b84cab268806285, type: 3}
   m_Name: 
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d36dd9fcae25042bbb815255411ff524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  address: 127.0.0.1
+  address: 192.168.0.4
   port: 39570
 --- !u!114 &160152864
 MonoBehaviour:
@@ -1070,7 +1070,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1524469800
 Transform:
   m_ObjectHideFlags: 0
