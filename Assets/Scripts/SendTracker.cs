@@ -16,16 +16,16 @@ public class SendTracker : MonoBehaviour {
         if (uClient == null) return;
 
         // 0: 腰
-        SendBoneTransformForVMT(0, tranCenterEye.localPosition, tranCenterEye.localRotation);
+        SendTransformForVMT(0, tranCenterEye.localPosition, tranCenterEye.localRotation);
 
         // 1: 左足
-        SendBoneTransformForVMT(1, tranLeftHand.localPosition, tranLeftHand.localRotation);
+        SendTransformForVMT(1, tranLeftHand.localPosition, tranLeftHand.localRotation);
 
         // 2: 右足
-        SendBoneTransformForVMT(2, tranRightHand.localPosition, tranRightHand.localRotation);
+        SendTransformForVMT(2, tranRightHand.localPosition, tranRightHand.localRotation);
     }
 
-    void SendBoneTransformForVMT(int index, Vector3 pos, Quaternion rot)
+    void SendTransformForVMT(int index, Vector3 pos, Quaternion rot)
     {
         uClient.Send("/VMT/Room/Unity",
             index, // 識別番号
