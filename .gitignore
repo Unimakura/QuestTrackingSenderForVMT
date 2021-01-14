@@ -6,6 +6,15 @@
 [Bb]uilds/
 [Uu]serSettings/
 Assets/AssetStoreTools*
+Assets/uOSC/
+Assets/uOSC.meta
+Assets/Oculus/
+Assets/Oculus.meta
+Assets/Resources/
+Assets/Resources.meta
+
+# TextMesh Pro files
+[Aa]ssets/TextMesh*Pro/
 
 # Visual Studio 2015 cache directory
 /.vs/
