@@ -20,7 +20,7 @@ Oculus Quset を追加のトラッカーとして活用できるので、Oculus 
 
 # 開発者向け
 ## ビルドに必要なもの
-* [Unity 2019.3.6.f1](https://unity3d.com/jp/get-unity/download/archive)
+* [Unity 2019.4.18.f1](https://unity3d.com/jp/get-unity/download/archive)
 * [git](https://git-scm.com/downloads)
     * upmの[uOSC](https://github.com/hecomi/uOSC)のため必要です。
 * [Oculus Integration](https://assetstore.unity.com/packages/tools/integration/oculus-integration-82022)  
