@@ -22,4 +22,10 @@ Oculus Quset を追加のトラッカーとして活用できるので、Oculus 
 ## ビルドに必要なもの
 * [Unity 2019.3.6.f1](https://unity3d.com/jp/get-unity/download/archive)
 * [uOSC](https://github.com/hecomi/uOSC/releases/tag/v0.0.2)
-* [Oculus Integration](https://assetstore.unity.com/packages/tools/integration/oculus-integration-82022)
+* [Oculus Integration](https://assetstore.unity.com/packages/tools/integration/oculus-integration-82022)  
+最低限、以下のファイル、フォルダをインポートして`OculusProjectConfig.asset`の`Requires System Keyboard`をチェックします。  
+    ```
+    Assets/Oculus/VR/
+    Assets/Oculus/SampleFramework/Core/DebugUI/
+    Assets/Oculus/OculusProjectConfig.asset
+    ```
