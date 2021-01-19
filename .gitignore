@@ -46,6 +46,7 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
+[Bb]uilds/
 *.unitypackage
 
 .DS_Store
