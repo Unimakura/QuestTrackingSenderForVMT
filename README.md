@@ -10,6 +10,7 @@ Oculus Quset を追加のトラッカーとして活用できるので、Oculus 
 ## デモプレイ
 * [VRChat で6点トラッキング](https://twitter.com/e_unimakura/status/1349026414868119552)
 * [Beatsaber と VMC & VMCAvatar で6点トラッキング](https://twitter.com/e_unimakura/status/1348546213788860416)
+* [Beatsaber 足の精度確認用](https://twitter.com/e_unimakura/status/1351186827038896129)
 
 # ※注意事項※
 本来の用途とは異なる使い方になりますので、利用は自己責任でお願いします。
