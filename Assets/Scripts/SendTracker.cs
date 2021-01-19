@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(uOSC.uOscClient))]
@@ -91,15 +92,21 @@ public class SendTracker : MonoBehaviour {
     private void SendTrackerForVMT(int index, Vector3 pos, Quaternion rot)
     {
         uClient.Send("/VMT/Room/Unity",
-            index,     // 識別番号
-            (int)1,    // 有効可否
-            (float)0f, // 補正時間
-            (float)pos.x,
-            (float)pos.y,
-            (float)pos.z,
-            (float)rot.x,
-            (float)rot.y,
-            (float)rot.z,
-            (float)rot.w);
+            index, // 識別番号
+            1,     // 有効可否
+            0f,    // 補正時間
+            RoundOffUnnecessaryNumber(pos.x),
+            RoundOffUnnecessaryNumber(pos.y),
+            RoundOffUnnecessaryNumber(pos.z),
+            RoundOffUnnecessaryNumber(rot.x),
+            RoundOffUnnecessaryNumber(rot.y),
+            RoundOffUnnecessaryNumber(rot.z),
+            RoundOffUnnecessaryNumber(rot.w)
+            );
+    }
+
+    private float RoundOffUnnecessaryNumber(float num)
+    {
+        return Mathf.Floor(num * 1000f) / 1000f;
     }
 }
