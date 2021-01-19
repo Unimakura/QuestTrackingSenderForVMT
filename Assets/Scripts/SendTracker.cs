@@ -1,14 +1,19 @@
 ﻿using UnityEngine;
+using TMPro;
 
 [RequireComponent(typeof(uOSC.uOscClient))]
 public class SendTracker : MonoBehaviour {
     [SerializeField] Transform tranCenterEye = null;
     [SerializeField] Transform tranLeftHand = null;
     [SerializeField] Transform tranRightHand = null;
-    
+    [SerializeField] TextMeshProUGUI textFps = null;
+
     private uOSC.uOscClient uClient;
     private bool isSending = false;
     public bool IsSending => isSending;
+
+    private float interval = 0.1f;
+    private float remainTime = 0f;
 
     private void Awake() {
         uClient = GetComponent<uOSC.uOscClient>();
@@ -16,7 +21,41 @@ public class SendTracker : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (isSending) Send();
+        if (CheckSendFrame())
+        {
+            Send();
+        }
+    }
+
+    /// <summary>
+    /// データ送信する間隔をセットする
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetInterval(float value)
+    {
+        interval = value;
+    }
+
+    /// <summary>
+    /// データを送信するフレームかどうかチェックする
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckSendFrame()
+    {
+        if (!isSending) return false;
+
+        remainTime -= Time.deltaTime;
+
+        if (remainTime <= 0f)
+        {
+            float fps = 1f / (interval - remainTime);
+            textFps.text = "Send/s: " + fps.ToString("f2");
+
+            remainTime = interval;
+            return true;
+        }
+
+        return false;
     }
     
     /// <summary>
@@ -25,6 +64,10 @@ public class SendTracker : MonoBehaviour {
     /// <param name="status"></param>
     public void ChangeSendStatus(bool status)
     {
+        if (status) {
+            remainTime = interval;
+        }
+
         isSending = status;
     }
 

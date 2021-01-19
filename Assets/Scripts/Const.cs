@@ -2,12 +2,14 @@
 {
     public const string IP = "KEY_IP";
     public const string PORT = "KEY_PORT";
+    public const string FPS_INDEX = "KEY_FPS_INDEX";
 }
 
 public static class DefaultValue
 {
     public const string IP = "192.168.0.1";
     public const string PORT = "39570";
+    public const int FPS_INDEX = 0;
 }
 
 public static class Label

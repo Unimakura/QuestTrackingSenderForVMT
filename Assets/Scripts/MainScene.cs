@@ -25,6 +25,7 @@ public class MainScene : MonoBehaviour
 
         var ip = DefaultValue.IP;
         var port = DefaultValue.PORT;
+        int fpsIndex = DefaultValue.FPS_INDEX;
 
         if (PlayerPrefs.HasKey(PlayerPrefsKey.IP))
         {
@@ -34,10 +35,15 @@ public class MainScene : MonoBehaviour
         {
             port = PlayerPrefs.GetString(PlayerPrefsKey.PORT);
         }
+        if (PlayerPrefs.HasKey(PlayerPrefsKey.FPS_INDEX))
+        {
+            fpsIndex = PlayerPrefs.GetInt(PlayerPrefsKey.FPS_INDEX);
+        }
 
         uClient.enabled = false;
         
         uiEvent.SetIP(ip);
         uiEvent.SetPort(port);
+        uiEvent.SetFpsIndex(fpsIndex);
     }
 }
