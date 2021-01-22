@@ -20,7 +20,9 @@ public class SendTracker : MonoBehaviour {
     private float currentIntervalTime = 0f;
     private List<Vector3> oldPositions;
     private List<Quaternion> oldRotations;
+    private List<int> oldPosCount;
     private float thresholdMovePos = 10; // 10m/s
+    private float thresholdLockPos = 10; // ロック判定
 
     private void Awake() {
         uClient = GetComponent<uOSC.uOscClient>();
@@ -104,6 +106,8 @@ public class SendTracker : MonoBehaviour {
             tranLeftHand.localRotation,
             tranRightHand.localRotation
         };
+
+        oldPosCount = new List<int>() { 0,0,0 };
     }
 
     /// <summary>
@@ -128,13 +132,16 @@ public class SendTracker : MonoBehaviour {
         float threshold = thresholdMovePos * Time.deltaTime;
         Vector3 oldPos = oldPositions[index];
 
-        if (Mathf.Abs(pos.x - oldPos.x) >= threshold || 
-            Mathf.Abs(pos.y - oldPos.y) >= threshold || 
-            Mathf.Abs(pos.z - oldPos.z) >= threshold)
+        if (oldPosCount[index] < thresholdLockPos &&
+             (Mathf.Abs(pos.x - oldPos.x) >= threshold || 
+              Mathf.Abs(pos.y - oldPos.y) >= threshold || 
+              Mathf.Abs(pos.z - oldPos.z) >= threshold))
         {
+            ++oldPosCount[index];
             return oldPos;
         }
 
+        oldPosCount[index] = 0;
         return pos;
     }
 
