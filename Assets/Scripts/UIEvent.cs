@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIEvent : MonoBehaviour
@@ -11,6 +12,7 @@ public class UIEvent : MonoBehaviour
     [SerializeField] TextMeshProUGUI textFpsButton = null;
     [SerializeField] SendingLabelAnimation labelAnimation = null;
     [SerializeField] uOscClientHelper uocHelper = null;
+    [SerializeField] Toggle toggleAdjustAbnormalPosition = null;
 
     private IList<int> fpsList = new List<int>() {
         72, 36, 18, 9
@@ -93,6 +95,13 @@ public class UIEvent : MonoBehaviour
         UpdateSendTrackerInterval();
     }
 
+    public void OnChangeAdjustAbnormalPosition()
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKey.ADJUST_ABNORMAL_POSITION,
+            (toggleAdjustAbnormalPosition.isOn) ? 1 : 0);
+        sendTracker.ChangeAbnormalAdjustPosition(toggleAdjustAbnormalPosition.isOn);
+    }
+
     /// <summary>
     /// IPの値をセットする
     /// </summary>
@@ -119,5 +128,14 @@ public class UIEvent : MonoBehaviour
     {
         fpsIndex = index;
         textFpsButton.text = fpsList[fpsIndex].ToString();
+    }
+
+    /// <summary>
+    /// AdjustAbnormalPositionのフラグセット
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetAdjustAbnormalPosition(int value)
+    {
+        toggleAdjustAbnormalPosition.isOn = (value == 1) ? true : false;
     }
 }

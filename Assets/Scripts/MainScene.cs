@@ -26,6 +26,7 @@ public class MainScene : MonoBehaviour
         var ip = DefaultValue.IP;
         var port = DefaultValue.PORT;
         int fpsIndex = DefaultValue.FPS_INDEX;
+        int adjustAbnormalPosition = DefaultValue.ADJUST_ABNORMAL_POSITION;
 
         if (PlayerPrefs.HasKey(PlayerPrefsKey.IP))
         {
@@ -39,11 +40,16 @@ public class MainScene : MonoBehaviour
         {
             fpsIndex = PlayerPrefs.GetInt(PlayerPrefsKey.FPS_INDEX);
         }
+        if (PlayerPrefs.HasKey(PlayerPrefsKey.ADJUST_ABNORMAL_POSITION))
+        {
+            adjustAbnormalPosition = PlayerPrefs.GetInt(PlayerPrefsKey.ADJUST_ABNORMAL_POSITION);
+        }
 
         uClient.enabled = false;
         
         uiEvent.SetIP(ip);
         uiEvent.SetPort(port);
         uiEvent.SetFpsIndex(fpsIndex);
+        uiEvent.SetAdjustAbnormalPosition(adjustAbnormalPosition);
     }
 }
