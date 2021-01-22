@@ -13,8 +13,9 @@ public class SendTracker : MonoBehaviour {
     private bool isSending = false;
     public bool IsSending => isSending;
 
-    private float interval = 0.1f;
-    private float remainTime = 0f;
+    private int interval = 1;
+    private int remainFrame = 0;
+    private float currentIntervalTime = 0f;
 
     private void Awake() {
         uClient = GetComponent<uOSC.uOscClient>();
@@ -32,7 +33,7 @@ public class SendTracker : MonoBehaviour {
     /// データ送信する間隔をセットする
     /// </summary>
     /// <param name="value"></param>
-    public void SetInterval(float value)
+    public void SetInterval(int value)
     {
         interval = value;
     }
@@ -45,14 +46,16 @@ public class SendTracker : MonoBehaviour {
     {
         if (!isSending) return false;
 
-        remainTime -= Time.deltaTime;
+        --remainFrame;
+        currentIntervalTime += Time.deltaTime;
 
-        if (remainTime <= 0f)
+        if (remainFrame <= 0)
         {
-            float fps = 1f / (interval - remainTime);
+            float fps = 1f / currentIntervalTime;
             textFps.text = "Send/s: " + fps.ToString("f2");
 
-            remainTime = interval;
+            remainFrame = interval;
+            currentIntervalTime = 0f;
             return true;
         }
 
@@ -66,7 +69,8 @@ public class SendTracker : MonoBehaviour {
     public void ChangeSendStatus(bool status)
     {
         if (status) {
-            remainTime = interval;
+            remainFrame = interval;
+            currentIntervalTime = 0f;
         }
 
         isSending = status;
@@ -105,8 +109,13 @@ public class SendTracker : MonoBehaviour {
             );
     }
 
+    /// <summary>
+    /// 一定値以下の少数を丸める
+    /// </summary>
+    /// <param name="num"></param>
+    /// <returns></returns>
     private float RoundOffUnnecessaryNumber(float num)
     {
-        return Mathf.Floor(num * 1000f) / 1000f;
+        return Mathf.Floor(num * 10000f) / 10000f;
     }
 }

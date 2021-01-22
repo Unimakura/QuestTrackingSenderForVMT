@@ -54,7 +54,7 @@ public class UIEvent : MonoBehaviour
 
     private void UpdateSendTrackerInterval()
     {
-        float interval = 1f / (float)fpsList[fpsIndex];
+        int interval = fpsIndex + 1;
         sendTracker.SetInterval(interval);
     }
 
