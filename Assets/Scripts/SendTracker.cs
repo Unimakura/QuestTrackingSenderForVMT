@@ -21,7 +21,7 @@ public class SendTracker : MonoBehaviour {
     private List<OldPositions> oldPositions;
     private List<OldRotations> oldRotations;
     private List<int> oldPosCount;
-    private float thresholdMovePos = 10; // 10m/s
+    private float thresholdMovePos = 5; // 5m/s
     private float thresholdLockPos = 10; // ロック判定
 
     private void Awake() {

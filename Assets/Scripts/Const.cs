@@ -12,8 +12,8 @@ public static class DefaultValue
     public const string IP = "192.168.0.1";
     public const string PORT = "39570";
     public const int FPS_INDEX = 0;
-    public const int ADJUST_ABNORMAL_POSITION = 0;
-    public const int SMOOTH = 0;
+    public const int ADJUST_ABNORMAL_POSITION = 1;
+    public const int SMOOTH = 1;
 }
 
 public static class Label
