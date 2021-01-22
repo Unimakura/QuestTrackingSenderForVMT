@@ -4,6 +4,7 @@
     public const string PORT = "KEY_PORT";
     public const string FPS_INDEX = "KEY_FPS_INDEX";
     public const string ADJUST_ABNORMAL_POSITION = "KEY_ADJUST_ABNORMAL_POSITION";
+    public const string SMOOTH = "KEY_SMOOTH";
 }
 
 public static class DefaultValue
@@ -12,6 +13,7 @@ public static class DefaultValue
     public const string PORT = "39570";
     public const int FPS_INDEX = 0;
     public const int ADJUST_ABNORMAL_POSITION = 0;
+    public const int SMOOTH = 0;
 }
 
 public static class Label

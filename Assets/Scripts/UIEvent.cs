@@ -13,6 +13,7 @@ public class UIEvent : MonoBehaviour
     [SerializeField] SendingLabelAnimation labelAnimation = null;
     [SerializeField] uOscClientHelper uocHelper = null;
     [SerializeField] Toggle toggleAdjustAbnormalPosition = null;
+    [SerializeField] Toggle toggleSmooth = null;
 
     private IList<int> fpsList = new List<int>() {
         72, 36, 18, 9
@@ -102,6 +103,13 @@ public class UIEvent : MonoBehaviour
         sendTracker.ChangeAbnormalAdjustPosition(toggleAdjustAbnormalPosition.isOn);
     }
 
+    public void OnChangeSmooth()
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKey.SMOOTH,
+            (toggleSmooth.isOn) ? 1 : 0);
+        sendTracker.ChangeSmooth(toggleSmooth.isOn);
+    }
+
     /// <summary>
     /// IPの値をセットする
     /// </summary>
@@ -137,5 +145,14 @@ public class UIEvent : MonoBehaviour
     public void SetAdjustAbnormalPosition(int value)
     {
         toggleAdjustAbnormalPosition.isOn = (value == 1) ? true : false;
+    }
+
+    /// <summary>
+    /// Smoothのフラグセット
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetSmooth(int value)
+    {
+        toggleSmooth.isOn = (value == 1) ? true : false;
     }
 }
