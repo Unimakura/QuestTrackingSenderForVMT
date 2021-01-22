@@ -14,6 +14,7 @@ public class SendTracker : MonoBehaviour {
     public bool IsSending => isSending;
     private bool isAdjustAbnormalPosition = false;
     private bool isSmooth = false;
+    private bool isFootOnly = false;
 
     private int interval = 1;
     private int remainFrame = 0;
@@ -53,6 +54,11 @@ public class SendTracker : MonoBehaviour {
     public void ChangeSmooth(bool value)
     {
         isSmooth = value;
+    }
+
+    public void ChangeFootOnly(bool value)
+    {
+        isFootOnly = value;
     }
 
     /// <summary>
@@ -121,7 +127,11 @@ public class SendTracker : MonoBehaviour {
     private void Send() {
         if (uClient == null) return;
 
-        SendTrackerForVMT(TrackerIndex.HIP, tranCenterEye.localPosition, tranCenterEye.localRotation);
+        if (!isFootOnly)
+        {
+            SendTrackerForVMT(TrackerIndex.HIP, tranCenterEye.localPosition, tranCenterEye.localRotation);    
+        }
+        
         SendTrackerForVMT(TrackerIndex.LEFT_LEG, tranLeftHand.localPosition, tranLeftHand.localRotation);
         SendTrackerForVMT(TrackerIndex.RIGHT_LEG, tranRightHand.localPosition, tranRightHand.localRotation);
     }

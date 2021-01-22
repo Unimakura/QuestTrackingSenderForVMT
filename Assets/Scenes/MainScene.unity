@@ -311,6 +311,7 @@ MonoBehaviour:
   uocHelper: {fileID: 160152866}
   toggleAdjustAbnormalPosition: {fileID: 1764035742}
   toggleSmooth: {fileID: 1300619802}
+  toggleFootOnly: {fileID: 776546792}
 --- !u!4 &160152862
 Transform:
   m_ObjectHideFlags: 0
@@ -1431,7 +1432,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 160152861}
-        m_MethodName: OnChangeAdjustAbnormalPosition
+        m_MethodName: OnChangeFootOnly
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

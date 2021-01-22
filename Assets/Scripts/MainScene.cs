@@ -28,6 +28,7 @@ public class MainScene : MonoBehaviour
         int fpsIndex = DefaultValue.FPS_INDEX;
         int adjustAbnormalPosition = DefaultValue.ADJUST_ABNORMAL_POSITION;
         int smooth = DefaultValue.SMOOTH;
+        int footOnly = DefaultValue.FOOT_ONLY;
 
         if (PlayerPrefs.HasKey(PlayerPrefsKey.IP))
         {
@@ -49,6 +50,10 @@ public class MainScene : MonoBehaviour
         {
             smooth = PlayerPrefs.GetInt(PlayerPrefsKey.SMOOTH);
         }
+        if (PlayerPrefs.HasKey(PlayerPrefsKey.FOOT_ONLY))
+        {
+            footOnly = PlayerPrefs.GetInt(PlayerPrefsKey.FOOT_ONLY);
+        }
 
         uClient.enabled = false;
         
@@ -57,5 +62,6 @@ public class MainScene : MonoBehaviour
         uiEvent.SetFpsIndex(fpsIndex);
         uiEvent.SetAdjustAbnormalPosition(adjustAbnormalPosition);
         uiEvent.SetSmooth(smooth);
+        uiEvent.SetFootOnly(footOnly);
     }
 }

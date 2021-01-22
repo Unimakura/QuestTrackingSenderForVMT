@@ -14,6 +14,7 @@ public class UIEvent : MonoBehaviour
     [SerializeField] uOscClientHelper uocHelper = null;
     [SerializeField] Toggle toggleAdjustAbnormalPosition = null;
     [SerializeField] Toggle toggleSmooth = null;
+    [SerializeField] Toggle toggleFootOnly = null;
 
     private IList<int> fpsList = new List<int>() {
         72, 36, 18, 9
@@ -110,6 +111,13 @@ public class UIEvent : MonoBehaviour
         sendTracker.ChangeSmooth(toggleSmooth.isOn);
     }
 
+    public void OnChangeFootOnly()
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKey.FOOT_ONLY,
+            (toggleFootOnly.isOn) ? 1 : 0);
+        sendTracker.ChangeFootOnly(toggleFootOnly.isOn);
+    }
+
     /// <summary>
     /// IPの値をセットする
     /// </summary>
@@ -154,5 +162,14 @@ public class UIEvent : MonoBehaviour
     public void SetSmooth(int value)
     {
         toggleSmooth.isOn = (value == 1) ? true : false;
+    }
+
+    /// <summary>
+    /// FootOnlyのフラグセット
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetFootOnly(int value)
+    {
+        toggleFootOnly.isOn = (value == 1) ? true : false;
     }
 }
