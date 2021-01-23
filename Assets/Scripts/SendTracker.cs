@@ -142,9 +142,7 @@ public class SendTracker : MonoBehaviour {
         Vector3 oldPos = oldPositions[index].PositionBefore;
 
         if (oldPosCount[index] < SendTrackerValue.THRESHOLD_LOCK_POS &&
-             (Mathf.Abs(pos.x - oldPos.x) >= threshold || 
-              Mathf.Abs(pos.y - oldPos.y) >= threshold || 
-              Mathf.Abs(pos.z - oldPos.z) >= threshold))
+            Vector3.Distance(pos, oldPos) >= threshold)
         {
             ++oldPosCount[index];
             Debug.Log("Change Old Pos");
