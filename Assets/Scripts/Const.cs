@@ -16,6 +16,11 @@ public static class DefaultValue
     public const int SMOOTH = 1;
 }
 
+public static class SendTrackerValue
+{
+    public const int  THRESHOLD_LOCK_POS = 10; // ロック判定
+}
+
 public static class Label
 {
     public const string START = "START";

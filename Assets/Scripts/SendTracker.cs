@@ -22,7 +22,6 @@ public class SendTracker : MonoBehaviour {
     private List<OldRotations> oldRotations;
     private List<int> oldPosCount;
     private float thresholdMovePos = 5; // 5m/s
-    private float thresholdLockPos = 10; // ロック判定
 
     private void Awake() {
         uClient = GetComponent<uOSC.uOscClient>();
@@ -137,7 +136,7 @@ public class SendTracker : MonoBehaviour {
         float threshold = thresholdMovePos * Time.deltaTime;
         Vector3 oldPos = oldPositions[index].PositionBefore;
 
-        if (oldPosCount[index] < thresholdLockPos &&
+        if (oldPosCount[index] < SendTrackerValue.THRESHOLD_LOCK_POS &&
              (Mathf.Abs(pos.x - oldPos.x) >= threshold || 
               Mathf.Abs(pos.y - oldPos.y) >= threshold || 
               Mathf.Abs(pos.z - oldPos.z) >= threshold))
