@@ -20,6 +20,8 @@ public class MainScene : MonoBehaviour
     /// </summary>
     private void Initialize()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
         uClient = GetComponent<uOSC.uOscClient>();
         laserPointer.laserBeamBehavior = LaserPointer.LaserBeamBehavior.OnWhenHitTarget;
 
