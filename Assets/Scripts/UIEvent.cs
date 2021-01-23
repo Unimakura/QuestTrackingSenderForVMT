@@ -9,6 +9,7 @@ public class UIEvent : MonoBehaviour
     [SerializeField] SendTracker sendTracker = null;
     [SerializeField] TMP_InputField inputIP = null;
     [SerializeField] TMP_InputField inputPort = null;
+    [SerializeField] TMP_InputField inputThresholdMovePos = null;
     [SerializeField] TextMeshProUGUI textFpsButton = null;
     [SerializeField] SendingLabelAnimation labelAnimation = null;
     [SerializeField] uOscClientHelper uocHelper = null;
@@ -44,6 +45,7 @@ public class UIEvent : MonoBehaviour
         {
             uocHelper.ChangeOSCAddress(inputIP.text, Int32.Parse(inputPort.text));
             UpdateSendTrackerInterval();
+            sendTracker.SetThresholdMovePos(Int32.Parse(inputThresholdMovePos.text));
             labelAnimation.Start();
         }
         else
@@ -76,6 +78,15 @@ public class UIEvent : MonoBehaviour
     public void OnChangePort()
     {
         PlayerPrefs.SetString(PlayerPrefsKey.PORT, inputPort.text);
+        ChangeStatus(false);
+    }
+
+    /// <summary>
+    /// ThresholdMovePosのテキスト変更処理
+    /// </summary>
+    public void OnChangeThresholdMovePos()
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKey.THRESHOLD_MOVE_POS, Int32.Parse(inputThresholdMovePos.text));
         ChangeStatus(false);
     }
 
@@ -154,5 +165,14 @@ public class UIEvent : MonoBehaviour
     public void SetSmooth(int value)
     {
         toggleSmooth.isOn = (value == 1) ? true : false;
+    }
+
+    /// <summary>
+    /// ThresholdMovePosセット
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetThresholdMovePos(int value)
+    {
+        inputThresholdMovePos.text = value.ToString();
     }
 }

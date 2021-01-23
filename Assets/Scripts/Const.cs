@@ -5,6 +5,7 @@
     public const string FPS_INDEX = "KEY_FPS_INDEX";
     public const string ADJUST_ABNORMAL_POSITION = "KEY_ADJUST_ABNORMAL_POSITION";
     public const string SMOOTH = "KEY_SMOOTH";
+    public const string THRESHOLD_MOVE_POS = "KEY_THRESHOLD_MOVE_POS";
 }
 
 public static class DefaultValue
@@ -12,8 +13,10 @@ public static class DefaultValue
     public const string IP = "192.168.0.1";
     public const string PORT = "39570";
     public const int FPS_INDEX = 0;
-    public const int ADJUST_ABNORMAL_POSITION = 1;
+    public const int ADJUST_ABNORMAL_POSITION = 0;
     public const int SMOOTH = 1;
+    public const int THRESHOLD_MOVE_POS = 5; // 5m/s
+
 }
 
 public static class SendTrackerValue
