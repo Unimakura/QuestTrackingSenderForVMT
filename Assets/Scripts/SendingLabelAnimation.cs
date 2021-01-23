@@ -32,7 +32,7 @@ public class SendingLabelAnimation : MonoBehaviour
     /// <summary>
     /// NOW SENDING 表示開始
     /// </summary>
-    public void Start()
+    public void StartAnimation()
     {
         sendingLabelAnimationStep = 0;
         textStartButton.text = Label.SENDING;
@@ -41,7 +41,7 @@ public class SendingLabelAnimation : MonoBehaviour
     /// <summary>
     /// NOW SENDING 表示停止
     /// </summary>
-    public void Stop()
+    public void StopAnimation()
     {
         textStartButton.text = Label.START;
     }

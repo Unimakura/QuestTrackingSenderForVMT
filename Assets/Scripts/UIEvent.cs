@@ -46,11 +46,11 @@ public class UIEvent : MonoBehaviour
             uocHelper.ChangeOSCAddress(inputIP.text, Int32.Parse(inputPort.text));
             UpdateSendTrackerInterval();
             sendTracker.SetThresholdMovePos(Int32.Parse(inputThresholdMovePos.text));
-            labelAnimation.Start();
+            labelAnimation.StartAnimation();
         }
         else
         {
-            labelAnimation.Stop();
+            labelAnimation.StopAnimation();
         }
 
         uocHelper.SetEnabled(status);
