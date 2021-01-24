@@ -29,7 +29,7 @@ public class SendTracker : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (CheckSendFrame())
+        if (isSending)
         {
             Send();
         }
@@ -65,8 +65,6 @@ public class SendTracker : MonoBehaviour {
     /// <returns></returns>
     private bool CheckSendFrame()
     {
-        if (!isSending) return false;
-
         --remainFrame;
         currentIntervalTime += Time.deltaTime;
 
@@ -125,9 +123,102 @@ public class SendTracker : MonoBehaviour {
     private void Send() {
         if (uClient == null) return;
 
-        SendTrackerForVMT(TrackerIndex.HIP, tranCenterEye.localPosition, tranCenterEye.localRotation);
-        SendTrackerForVMT(TrackerIndex.LEFT_LEG, tranLeftHand.localPosition, tranLeftHand.localRotation);
-        SendTrackerForVMT(TrackerIndex.RIGHT_LEG, tranRightHand.localPosition, tranRightHand.localRotation);
+        AdjustAndSendTrackerForVMT(TrackerIndex.HIP, tranCenterEye.localPosition, tranCenterEye.localRotation);
+        AdjustAndSendTrackerForVMT(TrackerIndex.LEFT_LEG, tranLeftHand.localPosition, tranLeftHand.localRotation);
+        AdjustAndSendTrackerForVMT(TrackerIndex.RIGHT_LEG, tranRightHand.localPosition, tranRightHand.localRotation);
+    }
+
+    /// <summary>
+    /// トラッカーを送信する
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="pos"></param>
+    /// <param name="rot"></param>
+    private void AdjustAndSendTrackerForVMT(int index, Vector3 pos, Quaternion rot)
+    {
+        var sendPos = AdjustPosition(index, pos);
+        var sendRot = AdjustRotation(index, rot);
+
+        if (CheckSendFrame())
+        {
+            uClient.Send("/VMT/Room/Unity",
+                index, // 識別番号
+                1,     // 有効可否
+                0f,    // 補正時間
+                sendPos.x,
+                sendPos.y,
+                sendPos.z,
+                sendRot.x,
+                sendRot.y,
+                sendRot.z,
+                sendRot.w
+                );
+        }
+    }
+
+    /// <summary>
+    /// 位置情報を調整する
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private Vector3 AdjustPosition(int index, Vector3 pos)
+    {
+        Vector3 currentPos = new Vector3(pos.x, pos.y, pos.z);
+        Vector3 returnPos;
+
+        if (isAdjustAbnormalPosition)
+        {
+            currentPos = AdjustAbnormalPosition(index, currentPos);
+        }
+
+        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
+        if (isSmooth)
+        {
+            returnPos = SmoothBeforePosition(index, currentPos);
+        }
+        else {
+            returnPos = currentPos;
+        }
+        
+        oldPositions[index].UpdateBefore(currentPos);
+
+        returnPos.x = RoundOffUnnecessaryNumber(returnPos.x);
+        returnPos.y = RoundOffUnnecessaryNumber(returnPos.y);
+        returnPos.z = RoundOffUnnecessaryNumber(returnPos.z);
+
+        return returnPos;
+    }
+
+    /// <summary>
+    /// 回転情報を調整する
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="rot"></param>
+    /// <returns></returns>
+    private Quaternion AdjustRotation(int index, Quaternion rot)
+    {
+        Quaternion currentRot = new Quaternion(rot.x, rot.y, rot.z, rot.w);
+        Quaternion returnRot;
+        
+        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
+        if (isSmooth)
+        {
+            returnRot = SmoothBeforeRotation(index, currentRot);
+        }
+        else
+        {
+            returnRot = currentRot;
+        }
+        
+        oldRotations[index].UpdateBefore(currentRot);
+
+        returnRot.x = RoundOffUnnecessaryNumber(returnRot.x);
+        returnRot.y = RoundOffUnnecessaryNumber(returnRot.y);
+        returnRot.z = RoundOffUnnecessaryNumber(returnRot.z);
+        returnRot.w = RoundOffUnnecessaryNumber(returnRot.w);
+
+        return returnRot;
     }
 
     /// <summary>
@@ -203,96 +294,6 @@ public class SendTracker : MonoBehaviour {
     private float CenterValue(float val1, float val2)
     {
         return (val1 + val2) / 2f;
-    }
-
-    /// <summary>
-    /// 位置情報を調整する
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="pos"></param>
-    /// <returns></returns>
-    private Vector3 AdjustPosition(int index, Vector3 pos)
-    {
-        Vector3 currentPos = new Vector3(pos.x, pos.y, pos.z);
-        Vector3 returnPos;
-
-        if (isAdjustAbnormalPosition)
-        {
-            currentPos = AdjustAbnormalPosition(index, currentPos);
-        }
-
-        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
-        if (isSmooth)
-        {
-            returnPos = SmoothBeforePosition(index, currentPos);
-        }
-        else {
-            returnPos = currentPos;
-        }
-        
-        oldPositions[index].UpdateBefore(currentPos);
-
-        returnPos.x = RoundOffUnnecessaryNumber(returnPos.x);
-        returnPos.y = RoundOffUnnecessaryNumber(returnPos.y);
-        returnPos.z = RoundOffUnnecessaryNumber(returnPos.z);
-
-        return returnPos;
-    }
-
-    /// <summary>
-    /// 回転情報を調整する
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="rot"></param>
-    /// <returns></returns>
-    private Quaternion AdjustRotation(int index, Quaternion rot)
-    {
-        Quaternion currentRot = new Quaternion(rot.x, rot.y, rot.z, rot.w);
-        Quaternion returnRot;
-        
-        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
-        if (isSmooth)
-        {
-            returnRot = SmoothBeforeRotation(index, currentRot);
-        }
-        else
-        {
-            returnRot = currentRot;
-        }
-        
-        oldRotations[index].UpdateBefore(currentRot);
-
-        returnRot.x = RoundOffUnnecessaryNumber(returnRot.x);
-        returnRot.y = RoundOffUnnecessaryNumber(returnRot.y);
-        returnRot.z = RoundOffUnnecessaryNumber(returnRot.z);
-        returnRot.w = RoundOffUnnecessaryNumber(returnRot.w);
-
-        return returnRot;
-    }
-
-    /// <summary>
-    /// トラッカーを送信する
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="pos"></param>
-    /// <param name="rot"></param>
-    private void SendTrackerForVMT(int index, Vector3 pos, Quaternion rot)
-    {
-        var sendPos = AdjustPosition(index, pos);
-        var sendRot = AdjustRotation(index, rot);
-
-        uClient.Send("/VMT/Room/Unity",
-            index, // 識別番号
-            1,     // 有効可否
-            0f,    // 補正時間
-            sendPos.x,
-            sendPos.y,
-            sendPos.z,
-            sendRot.x,
-            sendRot.y,
-            sendRot.z,
-            sendRot.w
-            );
     }
 
     /// <summary>
