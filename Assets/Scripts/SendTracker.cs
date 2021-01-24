@@ -176,10 +176,7 @@ public class SendTracker : MonoBehaviour {
 
         if (isSmooth)
         {
-            returnPos = Vector3.Lerp(
-                currentPos,
-                oldPositions[index].PositionBefore,
-                SendTrackerValue.LERP_RATE);
+            returnPos = AdjustSmoothPosition(index, currentPos);
         }
         else {
             returnPos = currentPos;
@@ -192,6 +189,22 @@ public class SendTracker : MonoBehaviour {
         returnPos.z = RoundOffUnnecessaryNumber(returnPos.z);
 
         return returnPos;
+    }
+
+    /// <summary>
+    /// ポジションをスムージング
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private Vector3 AdjustSmoothPosition(int index, Vector3 pos)
+    {
+        var estimatePos = GetEstimatePosition(index);
+
+        return Vector3.Lerp(
+                pos,
+                estimatePos,
+                SendTrackerValue.LERP_RATE);
     }
 
     /// <summary>
@@ -242,11 +255,7 @@ public class SendTracker : MonoBehaviour {
         }
 
         float threshold = thresholdMovePos * Time.deltaTime;
-        var oldPoss = oldPositions[index];
-
-        // 推測値を求める
-        Vector3 velocity = (oldPoss.PositionBefore - oldPoss.PositionBeforeLast) / oldPoss.OldDeltaTime;
-        Vector3 estimatePos = oldPoss.PositionBefore + (velocity * Time.deltaTime);
+        var estimatePos = GetEstimatePosition(index);
 
         if (Vector3.Distance(pos, estimatePos) >= threshold)
         {
@@ -264,6 +273,18 @@ public class SendTracker : MonoBehaviour {
         }
 
         return pos;
+    }
+
+    /// <summary>
+    /// 推測値を求める
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public Vector3 GetEstimatePosition(int index)
+    {
+        var oldPoss = oldPositions[index];
+        Vector3 velocity = (oldPoss.PositionBefore - oldPoss.PositionBeforeLast) / oldPoss.OldDeltaTime;
+        return oldPoss.PositionBefore + (velocity * Time.deltaTime);
     }
 
     /// <summary>
