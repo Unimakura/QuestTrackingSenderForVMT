@@ -15,13 +15,14 @@ public static class DefaultValue
     public const int FPS_INDEX = 0;
     public const int ADJUST_ABNORMAL_POSITION = 0;
     public const int SMOOTH = 1;
-    public const int THRESHOLD_MOVE_POS = 5; // 5m/s
+    public const float THRESHOLD_MOVE_POS = 5f; // 5m/s
 
 }
 
 public static class SendTrackerValue
 {
-    public const int  THRESHOLD_LOCK_POS = 10; // ロック判定
+    public const int  MAX_ADJUST_ABNORMAL_POS = 3; // 異常値調整回数
+    public const int  SKIP_ADJUST_ABNORMAL_POS = 3; // 異常値調整をスキップする回数（異常値調整が止まらなくなってしまうのを防ぐ為）
 }
 
 public static class Label

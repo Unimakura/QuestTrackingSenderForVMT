@@ -45,7 +45,7 @@ public class UIEvent : MonoBehaviour
         {
             uocHelper.ChangeOSCAddress(inputIP.text, Int32.Parse(inputPort.text));
             UpdateSendTrackerInterval();
-            sendTracker.SetThresholdMovePos(Int32.Parse(inputThresholdMovePos.text));
+            sendTracker.SetThresholdMovePos(float.Parse(inputThresholdMovePos.text));
             labelAnimation.StartAnimation();
         }
         else
@@ -86,7 +86,7 @@ public class UIEvent : MonoBehaviour
     /// </summary>
     public void OnChangeThresholdMovePos()
     {
-        PlayerPrefs.SetInt(PlayerPrefsKey.THRESHOLD_MOVE_POS, Int32.Parse(inputThresholdMovePos.text));
+        PlayerPrefs.SetFloat(PlayerPrefsKey.THRESHOLD_MOVE_POS, float.Parse(inputThresholdMovePos.text));
         ChangeStatus(false);
     }
 
@@ -171,7 +171,7 @@ public class UIEvent : MonoBehaviour
     /// ThresholdMovePosセット
     /// </summary>
     /// <param name="value"></param>
-    public void SetThresholdMovePos(int value)
+    public void SetThresholdMovePos(float value)
     {
         inputThresholdMovePos.text = value.ToString();
     }

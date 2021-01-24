@@ -20,7 +20,8 @@ public class SendTracker : MonoBehaviour {
     private float currentIntervalTime = 0f;
     private List<OldPositions> oldPositions;
     private List<OldRotations> oldRotations;
-    private List<int> oldPosCount;
+    private List<int> adjustAbnormalPosCount;
+    private List<int> skipAdjustAbnormalPosRemainCount;
     private float thresholdMovePos = 5;
 
     private void Awake() {
@@ -54,7 +55,7 @@ public class SendTracker : MonoBehaviour {
         isSmooth = value;
     }
 
-    public void SetThresholdMovePos(int value)
+    public void SetThresholdMovePos(float value)
     {
         thresholdMovePos = value;
     }
@@ -114,7 +115,8 @@ public class SendTracker : MonoBehaviour {
             new OldRotations(tranRightHand.localRotation, tranRightHand.localRotation)
         };
 
-        oldPosCount = new List<int>() { 0,0,0 };
+        adjustAbnormalPosCount = new List<int>() { 0,0,0 };
+        skipAdjustAbnormalPosRemainCount = new List<int>() { 0,0,0 };
     }
 
     /// <summary>
@@ -229,18 +231,34 @@ public class SendTracker : MonoBehaviour {
     /// <returns></returns>
     private Vector3 AdjustAbnormalPosition(int index, Vector3 pos)
     {
-        float threshold = thresholdMovePos * Time.deltaTime;
-        Vector3 oldPos = oldPositions[index].PositionBefore;
-
-        if (oldPosCount[index] < SendTrackerValue.THRESHOLD_LOCK_POS &&
-            Vector3.Distance(pos, oldPos) >= threshold)
+        if (skipAdjustAbnormalPosRemainCount[index] > 0)
         {
-            ++oldPosCount[index];
-            Debug.Log("Change Old Pos");
-            return oldPos;
+            --skipAdjustAbnormalPosRemainCount[index];
+            return pos;
         }
 
-        oldPosCount[index] = 0;
+        float threshold = thresholdMovePos * Time.deltaTime;
+        var oldPoss = oldPositions[index];
+
+        // 推測値を求める
+        Vector3 velocity = (oldPoss.PositionBefore - oldPoss.PositionBeforeLast) / oldPoss.OldDeltaTime;
+        Vector3 estimatePos = oldPoss.PositionBefore + (velocity * Time.deltaTime);
+
+        if (Vector3.Distance(pos, estimatePos) >= threshold)
+        {
+            ++adjustAbnormalPosCount[index];
+            Debug.Log("Adjust Abnormal Pos");
+
+            if (adjustAbnormalPosCount[index] >= SendTrackerValue.MAX_ADJUST_ABNORMAL_POS)
+            {
+                adjustAbnormalPosCount[index] = 0;
+
+                // 異常値調整が規定回数を超えた場合、一定期間調整をスキップするようにする
+                skipAdjustAbnormalPosRemainCount[index] = SendTrackerValue.SKIP_ADJUST_ABNORMAL_POS;
+            }
+            return estimatePos;
+        }
+
         return pos;
     }
 
@@ -310,9 +328,11 @@ public class SendTracker : MonoBehaviour {
     {
         private Vector3 positionBefore;
         private Vector3 positionBeforeLast;
+        private float oldDeltaTime = 0f;
 
         public Vector3 PositionBefore => positionBefore;
         public Vector3 PositionBeforeLast => positionBeforeLast;
+        public float OldDeltaTime => oldDeltaTime;
 
         public OldPositions(Vector3 before, Vector3 beforeLst)
         {
@@ -324,6 +344,7 @@ public class SendTracker : MonoBehaviour {
         {
             positionBeforeLast = positionBefore;
             positionBefore = before;
+            oldDeltaTime = Time.deltaTime;
         }
 
         public void OverwriteBefore(Vector3 before)
@@ -336,9 +357,11 @@ public class SendTracker : MonoBehaviour {
     {
         private Quaternion rotationBefore;
         private Quaternion rotationBeforeLast;
+        private float oldDeltaTime = 0f;
 
         public Quaternion RotationBefore => rotationBefore;
         public Quaternion RotationBeforeLast => rotationBeforeLast;
+        public float OldDeltaTime => oldDeltaTime;
 
         public OldRotations(Quaternion before, Quaternion beforeLst)
         {
@@ -350,6 +373,7 @@ public class SendTracker : MonoBehaviour {
         {
             rotationBeforeLast = rotationBefore;
             rotationBefore = before;
+            oldDeltaTime = Time.deltaTime;
         }
 
         public void OverwriteBefore(Quaternion before)
