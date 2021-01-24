@@ -174,10 +174,12 @@ public class SendTracker : MonoBehaviour {
             currentPos = AdjustAbnormalPosition(index, currentPos);
         }
 
-        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
         if (isSmooth)
         {
-            returnPos = SmoothBeforePosition(index, currentPos);
+            returnPos = Vector3.Lerp(
+                currentPos,
+                oldPositions[index].PositionBefore,
+                SendTrackerValue.LERP_RATE);
         }
         else {
             returnPos = currentPos;
@@ -203,10 +205,12 @@ public class SendTracker : MonoBehaviour {
         Quaternion currentRot = new Quaternion(rot.x, rot.y, rot.z, rot.w);
         Quaternion returnRot;
         
-        // 均す処理は今回と前々回の値を均した値を送信するため、最後に実行する
         if (isSmooth)
         {
-            returnRot = SmoothBeforeRotation(index, currentRot);
+            returnRot = Quaternion.Lerp(
+                currentRot,
+                oldRotations[index].RotationBefore,
+                SendTrackerValue.LERP_RATE);
         }
         else
         {
@@ -260,58 +264,6 @@ public class SendTracker : MonoBehaviour {
         }
 
         return pos;
-    }
-
-    /// <summary>
-    /// 位置を均す
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="pos"></param>
-    /// <returns></returns>
-    private Vector3 SmoothBeforePosition(int index, Vector3 pos)
-    {
-        var pos2 = oldPositions[index].PositionBeforeLast;
-        var smoothedPos = new Vector3(
-            CenterValue(pos.x, pos2.x),
-            CenterValue(pos.y, pos2.y),
-            CenterValue(pos.z, pos2.z)
-        );
-
-        oldPositions[index].OverwriteBefore(smoothedPos);
-
-        return smoothedPos;
-    }
-
-    /// <summary>
-    /// 回転を均す
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="rot"></param>
-    /// <returns></returns>
-    private Quaternion SmoothBeforeRotation(int index, Quaternion rot)
-    {
-        var rot2 = oldRotations[index].RotationBeforeLast;
-        var smoothedRot = new Quaternion(
-            CenterValue(rot.x, rot2.x),
-            CenterValue(rot.y, rot2.y),
-            CenterValue(rot.z, rot2.z),
-            CenterValue(rot.w, rot2.w)
-        );
-        
-        oldRotations[index].OverwriteBefore(smoothedRot);
-
-        return smoothedRot;
-    }
-
-    /// <summary>
-    /// 中間値を計算する
-    /// </summary>
-    /// <param name="val1"></param>
-    /// <param name="val2"></param>
-    /// <returns></returns>
-    private float CenterValue(float val1, float val2)
-    {
-        return (val1 + val2) / 2f;
     }
 
     /// <summary>
