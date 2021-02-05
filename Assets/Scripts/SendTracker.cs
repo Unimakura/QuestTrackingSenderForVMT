@@ -22,7 +22,6 @@ public class SendTracker : MonoBehaviour {
     private List<OldRotations> oldRotations;
     private List<int> adjustAbnormalPosCount;
     private List<int> skipAdjustAbnormalPosRemainCount;
-    private float thresholdMovePos = 5;
 
     private void Awake() {
         uClient = GetComponent<uOSC.uOscClient>();
@@ -53,11 +52,6 @@ public class SendTracker : MonoBehaviour {
     public void ChangeSmooth(bool value)
     {
         isSmooth = value;
-    }
-
-    public void SetThresholdMovePos(float value)
-    {
-        thresholdMovePos = value;
     }
 
     /// <summary>
@@ -254,7 +248,7 @@ public class SendTracker : MonoBehaviour {
             return pos;
         }
 
-        float threshold = thresholdMovePos * Time.deltaTime;
+        float threshold = SendTrackerValue.THRESHOLD_MOVE_POS * Time.deltaTime;
         var estimatePos = GetEstimatePosition(index);
 
         if (Vector3.Distance(pos, estimatePos) >= threshold)
