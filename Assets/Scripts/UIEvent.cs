@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[RequireComponent(typeof(TrackingPresenter))]
 public class UIEvent : MonoBehaviour
 {
     [SerializeField] SendTracker sendTracker = null;
@@ -14,6 +15,12 @@ public class UIEvent : MonoBehaviour
     [SerializeField] uOscClientHelper uocHelper = null;
     [SerializeField] Toggle toggleAdjustAbnormalPosition = null;
     [SerializeField] Toggle toggleSmooth = null;
+
+    private TrackingPresenter trackingPresenter = null;
+
+    private void Awake() {
+        trackingPresenter = GetComponent<TrackingPresenter>();
+    }
 
     private IList<int> fpsList = new List<int>() {
         72, 36, 18, 9
@@ -100,14 +107,14 @@ public class UIEvent : MonoBehaviour
     {
         PlayerPrefs.SetInt(PlayerPrefsKey.ADJUST_ABNORMAL_POSITION,
             (toggleAdjustAbnormalPosition.isOn) ? 1 : 0);
-        sendTracker.ChangeAbnormalAdjustPosition(toggleAdjustAbnormalPosition.isOn);
+        trackingPresenter.ChangeAbnormalAdjustPosition(toggleAdjustAbnormalPosition.isOn);
     }
 
     public void OnChangeSmooth()
     {
         PlayerPrefs.SetInt(PlayerPrefsKey.SMOOTH,
             (toggleSmooth.isOn) ? 1 : 0);
-        sendTracker.ChangeSmooth(toggleSmooth.isOn);
+        trackingPresenter.ChangeSmooth(toggleSmooth.isOn);
     }
 
     /// <summary>

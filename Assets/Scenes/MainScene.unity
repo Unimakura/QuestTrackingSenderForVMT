@@ -210,6 +210,7 @@ GameObject:
   - component: {fileID: 160152861}
   - component: {fileID: 160152865}
   - component: {fileID: 160152866}
+  - component: {fileID: 160152867}
   m_Layer: 0
   m_Name: Script
   m_TagString: Untagged
@@ -277,9 +278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92467465992595a4f9311cf780b5bb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tranCenterEye: {fileID: 588459775}
-  tranLeftHand: {fileID: 1187914946}
-  tranRightHand: {fileID: 372034073}
   textFps: {fileID: 898109428}
 --- !u!114 &160152865
 MonoBehaviour:
@@ -307,6 +305,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3cd37b85db4bdc42b9cc034a722c67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &160152867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160152860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de75e8f6fdfc524e96e0876ff71550c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tranCenterEye: {fileID: 588459775}
+  tranLeftHand: {fileID: 1187914946}
+  tranRightHand: {fileID: 372034073}
 --- !u!1 &172266161
 GameObject:
   m_ObjectHideFlags: 0
