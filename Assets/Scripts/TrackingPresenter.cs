@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// トラッキングの情報を提供する
@@ -16,6 +17,8 @@ public class TrackingPresenter : MonoBehaviour
     private List<OldRotations> oldRotations;
     private List<int> adjustAbnormalPosCount;
     private List<int> skipAdjustAbnormalPosRemainCount;
+    private List<int> maybeTrackingLostCount;
+    private List<bool> maybeTrackingLost;
 
     /// <summary>
     /// 初期化
@@ -36,6 +39,8 @@ public class TrackingPresenter : MonoBehaviour
 
         adjustAbnormalPosCount = new List<int>() { 0,0,0 };
         skipAdjustAbnormalPosRemainCount = new List<int>() { 0,0,0 };
+        maybeTrackingLostCount = new List<int>() { 0,0,0 };
+        maybeTrackingLost = new List<bool>() { false,false,false };
     }
 
     /// <summary>
@@ -54,7 +59,16 @@ public class TrackingPresenter : MonoBehaviour
     /// <param name="index"></param>
     /// <returns></returns>
 
-    public Quaternion CalculateTrackingRotationByIndex(int index) {
+    public Quaternion CalculateTrackingRotationByIndex(int index)
+    {
+        // Debug
+        CalculateMaybeTrackingLost(index);
+
+        if (maybeTrackingLost[index]) {
+            // TODO トラッキングがロストしていそうなので、FinalIKの位置に書き換える
+            Debug.LogError($"{((index == TrackerIndex.RIGHT_LEG) ? "RTouch" : "LTouch")} is MaybeTrackingLost");
+        }
+
         return AdjustRotation(index, GetTrackingRotationByIndex(index));
     }
 
@@ -95,6 +109,8 @@ public class TrackingPresenter : MonoBehaviour
         Vector3 currentPos = new Vector3(pos.x, pos.y, pos.z);
         Vector3 returnPos;
 
+        oldPositions[index].UpdateOriginalBefore(currentPos);
+
         if (isAdjustAbnormalPosition)
         {
             currentPos = AdjustAbnormalPosition(index, currentPos);
@@ -130,7 +146,7 @@ public class TrackingPresenter : MonoBehaviour
         return Vector3.Lerp(
                 pos,
                 estimatePos,
-                SendTrackerValue.LERP_RATE);
+                TrackingConst.LERP_RATE);
     }
 
     /// <summary>
@@ -149,7 +165,7 @@ public class TrackingPresenter : MonoBehaviour
             returnRot = Quaternion.Lerp(
                 currentRot,
                 oldRotations[index].RotationBefore,
-                SendTrackerValue.LERP_RATE);
+                TrackingConst.LERP_RATE);
         }
         else
         {
@@ -180,7 +196,7 @@ public class TrackingPresenter : MonoBehaviour
             return pos;
         }
 
-        float threshold = SendTrackerValue.THRESHOLD_MOVE_POS * Time.deltaTime;
+        float threshold = TrackingConst.THRESHOLD_MOVE_POS * Time.deltaTime;
         var estimatePos = GetEstimatePosition(index);
 
         if (Vector3.Distance(pos, estimatePos) >= threshold)
@@ -188,12 +204,12 @@ public class TrackingPresenter : MonoBehaviour
             ++adjustAbnormalPosCount[index];
             Debug.Log("Adjust Abnormal Pos");
 
-            if (adjustAbnormalPosCount[index] >= SendTrackerValue.MAX_ADJUST_ABNORMAL_POS)
+            if (adjustAbnormalPosCount[index] >= TrackingConst.MAX_ADJUST_ABNORMAL_POS)
             {
                 adjustAbnormalPosCount[index] = 0;
 
                 // 異常値調整が規定回数を超えた場合、一定期間調整をスキップするようにする
-                skipAdjustAbnormalPosRemainCount[index] = SendTrackerValue.SKIP_ADJUST_ABNORMAL_POS;
+                skipAdjustAbnormalPosRemainCount[index] = TrackingConst.SKIP_ADJUST_ABNORMAL_POS;
             }
             return estimatePos;
         }
@@ -211,6 +227,53 @@ public class TrackingPresenter : MonoBehaviour
         var oldPoss = oldPositions[index];
         Vector3 velocity = (oldPoss.PositionBefore - oldPoss.PositionBeforeLast) / oldPoss.OldDeltaTime;
         return oldPoss.PositionBefore + (velocity * Time.deltaTime);
+    }
+    
+
+    /// <summary>
+    /// ロストしているかもしれないチェック
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public void CalculateMaybeTrackingLost(int index)
+    {
+        // HMDはロストしない
+        if (index == TrackerIndex.HIP) return;
+
+        var oldPoss = oldPositions[index];
+        
+        // 前回の値と前々回の値で計算する
+        // 閾値よりも移動している場合はロストしていないとする
+        float observedDistance = Vector3.Distance(oldPoss.OriginalPositionBefore, oldPoss.OriginalPositionBeforeLast);
+        if (observedDistance > TrackingConst.THRESHOLD_TRACKING_LOST)
+        {
+            maybeTrackingLostCount[index] = Math.Max(maybeTrackingLostCount[index] - 1, 0);
+            if (maybeTrackingLostCount[index] == 0) maybeTrackingLost[index] = false;
+            return;
+        }
+
+        Vector3 acceleration = (index == TrackerIndex.RIGHT_LEG)
+            ? OVRInput.GetLocalControllerAcceleration(OVRInput.Controller.RTouch)
+            : OVRInput.GetLocalControllerAcceleration(OVRInput.Controller.LTouch);
+
+        Vector3 calcPos = oldPoss.OriginalPositionBeforeLast + acceleration * Time.deltaTime;
+
+        // 観測した移動値と、計測した移動値が閾値以内の場合はロストしていないとする
+        float calcDistance = Vector3.Distance(calcPos, oldPoss.OriginalPositionBeforeLast);
+        if (Math.Abs(observedDistance - calcDistance) < TrackingConst.THRESHOLD_TRACKING_LOST_DISTANCE)
+        {
+            maybeTrackingLostCount[index] = Math.Max(maybeTrackingLostCount[index] - 1, 0);
+            if (maybeTrackingLostCount[index] == 0) maybeTrackingLost[index] = false;
+            return;
+        }
+        
+        maybeTrackingLostCount[index] = Math.Min(maybeTrackingLostCount[index] + 1, TrackingConst.TRACKING_LOST_CONTINUES_COUNT);
+        
+        // ロストしていそう
+        if (maybeTrackingLostCount[index] == TrackingConst.TRACKING_LOST_CONTINUES_COUNT)
+        {
+            maybeTrackingLost[index] = true;
+        }
     }
 
     /// <summary>
@@ -238,10 +301,14 @@ public class TrackingPresenter : MonoBehaviour
     /// </summary>
     private class OldPositions
     {
+        private Vector3 originalPositionBefore;
+        private Vector3 originalPositionBeforeLast;
         private Vector3 positionBefore;
         private Vector3 positionBeforeLast;
         private float oldDeltaTime = 0f;
 
+        public Vector3 OriginalPositionBefore => originalPositionBefore;
+        public Vector3 OriginalPositionBeforeLast => originalPositionBeforeLast;
         public Vector3 PositionBefore => positionBefore;
         public Vector3 PositionBeforeLast => positionBeforeLast;
         public float OldDeltaTime => oldDeltaTime;
@@ -250,6 +317,8 @@ public class TrackingPresenter : MonoBehaviour
         {
             positionBefore = before;
             positionBeforeLast = beforeLst;
+            originalPositionBefore = before;
+            originalPositionBeforeLast = before;
         }
 
         public void UpdateBefore(Vector3 before)
@@ -259,9 +328,10 @@ public class TrackingPresenter : MonoBehaviour
             oldDeltaTime = Time.deltaTime;
         }
 
-        public void OverwriteBefore(Vector3 before)
+        public void UpdateOriginalBefore(Vector3 before)
         {
-            positionBefore = before;
+            originalPositionBeforeLast = originalPositionBefore;
+            originalPositionBefore = before;
         }
     }
     

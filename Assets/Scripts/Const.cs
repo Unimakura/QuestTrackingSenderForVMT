@@ -17,12 +17,15 @@ public static class DefaultValue
 
 }
 
-public static class SendTrackerValue
+public static class TrackingConst
 {
     public const int  MAX_ADJUST_ABNORMAL_POS = 3; // 異常値調整回数
     public const int  SKIP_ADJUST_ABNORMAL_POS = 3; // 異常値調整をスキップする回数（異常値調整が止まらなくなってしまうのを防ぐ為）
     public const float LERP_RATE = 0.5f;
     public const float THRESHOLD_MOVE_POS = 1.5f;
+    public const float THRESHOLD_TRACKING_LOST = 0.001f;
+    public const float THRESHOLD_TRACKING_LOST_DISTANCE = 0.01f;
+    public const int TRACKING_LOST_CONTINUES_COUNT = 5;
 }
 
 public static class Label
