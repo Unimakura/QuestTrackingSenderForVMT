@@ -21,9 +21,14 @@ public class SendTracker : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (isSending && CheckSendFrame())
+        if (isSending)
         {
-            Send();
+            trackingPresenter.CalculateTracking();
+
+            if (CheckSendFrame())
+            {
+                Send();
+            }
         }
     }
 
@@ -95,8 +100,8 @@ public class SendTracker : MonoBehaviour {
     {
         SendTrackerForVMT(
             index,
-            trackingPresenter.CalculateTrackingPositionByIndex(index),
-            trackingPresenter.CalculateTrackingRotationByIndex(index));
+            trackingPresenter.GetCurrentPositionByIndex(index),
+            trackingPresenter.GetCurrentRotationByIndex(index));
     }
 
     

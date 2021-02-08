@@ -19,6 +19,9 @@ public class TrackingPresenter : MonoBehaviour
     private List<int> skipAdjustAbnormalPosRemainCount;
     private List<int> maybeTrackingLostCount;
     private List<bool> maybeTrackingLost;
+    private List<Vector3> currentPositions;
+    private List<Quaternion> currentRotations;
+    private int[] trackerIndexs = new int[] { TrackerIndex.HIP, TrackerIndex.LEFT_LEG, TrackerIndex.RIGHT_LEG };
 
     /// <summary>
     /// 初期化
@@ -41,35 +44,57 @@ public class TrackingPresenter : MonoBehaviour
         skipAdjustAbnormalPosRemainCount = new List<int>() { 0,0,0 };
         maybeTrackingLostCount = new List<int>() { 0,0,0 };
         maybeTrackingLost = new List<bool>() { false,false,false };
+        
+        currentPositions = new List<Vector3>() {
+            Vector3.zero, Vector3.zero, Vector3.zero
+        };
+
+        currentRotations = new List<Quaternion>() {
+            Quaternion.identity, Quaternion.identity, Quaternion.identity
+        };
     }
 
     /// <summary>
-    /// 指定のPositionを計算して返す
+    /// 現在の位置を返す
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public Vector3 CalculateTrackingPositionByIndex(int index)
+    public Vector3 GetCurrentPositionByIndex(int index)
     {
-        return AdjustPosition(index, GetTrackingPositionByIndex(index));
+        return currentPositions[index];
     }
 
     /// <summary>
-    /// 指定のRotationを計算して返す
+    /// 現在の回転を返す
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-
-    public Quaternion CalculateTrackingRotationByIndex(int index)
+    public Quaternion GetCurrentRotationByIndex(int index)
     {
-        // Debug
-        CalculateMaybeTrackingLost(index);
+        return currentRotations[index];
+    }
 
-        if (maybeTrackingLost[index]) {
-            // TODO トラッキングがロストしていそうなので、FinalIKの位置に書き換える
-            Debug.LogError($"{((index == TrackerIndex.RIGHT_LEG) ? "RTouch" : "LTouch")} is MaybeTrackingLost");
+    /// <summary>
+    /// トラッキングの位置を計算する
+    /// </summary>
+    public void CalculateTracking()
+    {
+        for (var i=0; i<trackerIndexs.Length; ++i)
+        {
+            int index = trackerIndexs[i];
+            
+            // Debug
+            CalculateMaybeTrackingLost(index);
+
+            if (maybeTrackingLost[index]) {
+                // TODO トラッキングがロストしていそうなので、返す値はFinalIKの位置に書き換える
+                // MEMO 前と前々を使うためCalculateTrackingPositionByIndexより先に行う
+                Debug.LogError($"{((index == TrackerIndex.RIGHT_LEG) ? "RTouch" : "LTouch")} is MaybeTrackingLost");
+            }
+
+            currentPositions[index] = AdjustPosition(index, GetTrackingPositionByIndex(index));
+            currentRotations[index] = AdjustRotation(index, GetTrackingRotationByIndex(index));
         }
-
-        return AdjustRotation(index, GetTrackingRotationByIndex(index));
     }
 
     private Vector3 GetTrackingPositionByIndex(int index)
@@ -85,7 +110,7 @@ public class TrackingPresenter : MonoBehaviour
         }
     }
     
-    public Quaternion GetTrackingRotationByIndex(int index)
+    private Quaternion GetTrackingRotationByIndex(int index)
     {
         if (index == TrackerIndex.LEFT_LEG) {
             return tranLeftHand.localRotation;
@@ -235,7 +260,7 @@ public class TrackingPresenter : MonoBehaviour
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public void CalculateMaybeTrackingLost(int index)
+    private void CalculateMaybeTrackingLost(int index)
     {
         // HMDはロストしない
         if (index == TrackerIndex.HIP) return;
