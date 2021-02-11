@@ -32,10 +32,13 @@ Oculus Quset を追加のトラッカーとして活用できるので、Oculus 
 * [Unity 2019.4.18.f1](https://unity3d.com/jp/get-unity/download/archive)
 * [git](https://git-scm.com/downloads)
     * upmの[uOSC](https://github.com/hecomi/uOSC)のため必要です。
-* [Oculus Integration](https://assetstore.unity.com/packages/tools/integration/oculus-integration-82022)  
+* [Oculus Integration](https://assetstore.unity.com/packages/tools/integration/oculus-integration-82022) <br>
 最低限、以下のファイル、フォルダをインポートして`OculusProjectConfig.asset`の`Requires System Keyboard`をチェックします。  
     ```
     Assets/Oculus/VR/
     Assets/Oculus/SampleFramework/Core/DebugUI/
     Assets/Oculus/OculusProjectConfig.asset
     ```
+* [Final IK](https://assetstore.unity.com/packages/tools/animation/final-ik-14290)<br>
+最低限、以下のファイル、フォルダをインポートします。<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/Unimakura/QuestTrackingSenderForVMT/wiki/images/finalik.jpg"><img src="https://github.com/Unimakura/QuestTrackingSenderForVMT/wiki/images/finalik.jpg" height="300px"></a><br>
