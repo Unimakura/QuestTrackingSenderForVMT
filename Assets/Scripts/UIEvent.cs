@@ -15,6 +15,7 @@ public class UIEvent : MonoBehaviour
     [SerializeField] uOscClientHelper uocHelper = null;
     [SerializeField] Toggle toggleAdjustAbnormalPosition = null;
     [SerializeField] Toggle toggleSmooth = null;
+    [SerializeField] Toggle toggleCoverUp = null;
 
     private TrackingPresenter trackingPresenter = null;
 
@@ -117,6 +118,13 @@ public class UIEvent : MonoBehaviour
         trackingPresenter.ChangeSmooth(toggleSmooth.isOn);
     }
 
+    public void OnChangeCoverUp()
+    {
+        PlayerPrefs.SetInt(PlayerPrefsKey.COVER_UP,
+            (toggleCoverUp.isOn) ? 1 : 0);
+        trackingPresenter.ChangeCoverUp(toggleCoverUp.isOn);
+    }
+
     /// <summary>
     /// IPの値をセットする
     /// </summary>
@@ -161,5 +169,14 @@ public class UIEvent : MonoBehaviour
     public void SetSmooth(int value)
     {
         toggleSmooth.isOn = (value == 1) ? true : false;
+    }
+
+    /// <summary>
+    /// CoverUpのフラグセット
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetCoverUp(int value)
+    {
+        toggleCoverUp.isOn = (value == 1) ? true : false;
     }
 }
