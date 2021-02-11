@@ -30,6 +30,7 @@ public class MainScene : MonoBehaviour
         int fpsIndex = DefaultValue.FPS_INDEX;
         int adjustAbnormalPosition = DefaultValue.ADJUST_ABNORMAL_POSITION;
         int smooth = DefaultValue.SMOOTH;
+        int coverUp = DefaultValue.COVER_UP;
 
         if (PlayerPrefs.HasKey(PlayerPrefsKey.IP))
         {
@@ -51,6 +52,10 @@ public class MainScene : MonoBehaviour
         {
             smooth = PlayerPrefs.GetInt(PlayerPrefsKey.SMOOTH);
         }
+        if (PlayerPrefs.HasKey(PlayerPrefsKey.COVER_UP))
+        {
+            coverUp = PlayerPrefs.GetInt(PlayerPrefsKey.COVER_UP);
+        }
 
         uClient.enabled = false;
         
@@ -59,5 +64,6 @@ public class MainScene : MonoBehaviour
         uiEvent.SetFpsIndex(fpsIndex);
         uiEvent.SetAdjustAbnormalPosition(adjustAbnormalPosition);
         uiEvent.SetSmooth(smooth);
+        uiEvent.SetCoverUp(coverUp);
     }
 }

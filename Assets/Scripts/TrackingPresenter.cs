@@ -10,9 +10,11 @@ public class TrackingPresenter : MonoBehaviour
     [SerializeField] Transform tranCenterEye = null;
     [SerializeField] Transform tranLeftHand = null;
     [SerializeField] Transform tranRightHand = null;
+    [SerializeField] CoverUpController coverUpController = null;
 
     private bool isAdjustAbnormalPosition = false;
     private bool isSmooth = false;
+    private bool isCoverUp = false;
     private List<OldPositions> oldPositions;
     private List<OldRotations> oldRotations;
     private List<int> adjustAbnormalPosCount;
@@ -83,17 +85,20 @@ public class TrackingPresenter : MonoBehaviour
         {
             int index = trackerIndexs[i];
             
-            // Debug
-            CalculateMaybeTrackingLost(index);
-
-            if (maybeTrackingLost[index]) {
-                // TODO トラッキングがロストしていそうなので、返す値はFinalIKの位置に書き換える
-                // MEMO 前と前々を使うためCalculateTrackingPositionByIndexより先に行う
-                Debug.LogError($"{((index == TrackerIndex.RIGHT_LEG) ? "RTouch" : "LTouch")} is MaybeTrackingLost");
+            // MEMO 前と前々を使うためAdjustPositionより先に行う
+            if (isCoverUp)
+            {
+                CalculateMaybeTrackingLost(index);
             }
 
+            // ロストしていても計算は行う
             currentPositions[index] = AdjustPosition(index, GetTrackingPositionByIndex(index));
             currentRotations[index] = AdjustRotation(index, GetTrackingRotationByIndex(index));
+
+            if (isCoverUp && maybeTrackingLost[index]) {
+                // トラッキングがロストしていそうなので、FinalIKの位置に書き換える
+                currentPositions[index] = coverUpController.GetCoverUpPosition(index);
+            }
         }
     }
 
@@ -227,7 +232,6 @@ public class TrackingPresenter : MonoBehaviour
         if (Vector3.Distance(pos, estimatePos) >= threshold)
         {
             ++adjustAbnormalPosCount[index];
-            Debug.Log("Adjust Abnormal Pos");
 
             if (adjustAbnormalPosCount[index] >= TrackingConst.MAX_ADJUST_ABNORMAL_POS)
             {
@@ -273,7 +277,7 @@ public class TrackingPresenter : MonoBehaviour
         if (observedDistance > TrackingConst.THRESHOLD_TRACKING_LOST)
         {
             maybeTrackingLostCount[index] = Math.Max(maybeTrackingLostCount[index] - 1, 0);
-            if (maybeTrackingLostCount[index] == 0) maybeTrackingLost[index] = false;
+            if (maybeTrackingLostCount[index] == 0) SetTrackingLost(index, false);
             return;
         }
 
@@ -288,7 +292,7 @@ public class TrackingPresenter : MonoBehaviour
         if (Math.Abs(observedDistance - calcDistance) < TrackingConst.THRESHOLD_TRACKING_LOST_DISTANCE)
         {
             maybeTrackingLostCount[index] = Math.Max(maybeTrackingLostCount[index] - 1, 0);
-            if (maybeTrackingLostCount[index] == 0) maybeTrackingLost[index] = false;
+            if (maybeTrackingLostCount[index] == 0) SetTrackingLost(index, false);
             return;
         }
         
@@ -297,8 +301,14 @@ public class TrackingPresenter : MonoBehaviour
         // ロストしていそう
         if (maybeTrackingLostCount[index] == TrackingConst.TRACKING_LOST_CONTINUES_COUNT)
         {
-            maybeTrackingLost[index] = true;
+            SetTrackingLost(index, true);
         }
+    }
+
+    private void SetTrackingLost(int index, bool isLost)
+    {
+        maybeTrackingLost[index] = isLost;
+        coverUpController.SetTrackingLost(index, isLost);
     }
 
     /// <summary>
@@ -319,6 +329,11 @@ public class TrackingPresenter : MonoBehaviour
     public void ChangeSmooth(bool value)
     {
         isSmooth = value;
+    }
+
+    public void ChangeCoverUp(bool value)
+    {
+        isCoverUp = value;
     }
 
     /// <summary>

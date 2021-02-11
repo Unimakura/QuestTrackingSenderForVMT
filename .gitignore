@@ -10,6 +10,8 @@ Assets/Oculus/
 Assets/Oculus.meta
 Assets/Resources/
 Assets/Resources.meta
+Assets/Plugins/RootMotion/
+Assets/Plugins/RootMotion.meta
 
 # TextMesh Pro files
 [Aa]ssets/TextMesh*Pro/

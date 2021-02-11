@@ -5,6 +5,7 @@
     public const string FPS_INDEX = "KEY_FPS_INDEX";
     public const string ADJUST_ABNORMAL_POSITION = "KEY_ADJUST_ABNORMAL_POSITION";
     public const string SMOOTH = "KEY_SMOOTH";
+    public const string COVER_UP = "KEY_COVER_UP";
 }
 
 public static class DefaultValue
@@ -14,7 +15,7 @@ public static class DefaultValue
     public const int FPS_INDEX = 0;
     public const int ADJUST_ABNORMAL_POSITION = 0;
     public const int SMOOTH = 1;
-
+    public const int COVER_UP = 1;
 }
 
 public static class TrackingConst
